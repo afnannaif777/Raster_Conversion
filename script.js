@@ -4,7 +4,7 @@
 
 // Replace this URL with your Render backend URL after deploying.
 // Example: "https://rasternorm.onrender.com"
-const API = ""https://raster-conversion.onrender.com";
+const API = "https://raster-conversion.onrender.com";
 
 // ── DOM refs ───────────────────────────────────
 const dropzone      = document.getElementById("dropzone");
