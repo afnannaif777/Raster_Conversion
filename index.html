@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RasterNorm — Raster Image Normalizer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-grid-bg"></div>
+    <nav class="nav">
+      <div class="nav-logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">RasterNorm</span>
+      </div>
+      <div class="nav-badge">
+        <span class="badge-dot" id="serverDot"></span>
+        <span class="badge-label" id="serverLabel">Checking server...</span>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Geospatial Image Processing</p>
+      <h1 class="hero-title">
+        Normalize your<br />
+        <span class="hero-accent">raster imagery</span><br />
+        in seconds.
+      </h1>
+      <p class="hero-sub">
+        Upload a TIFF or raster file. Get back a clean, band-normalized image
+        with pixel values scaled to 0–255 — ready for analysis or visualization.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-val">Min–Max</span>
+          <span class="stat-key">Normalization</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-val">Multi-band</span>
+          <span class="stat-key">Support</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-val">GeoTIFF</span>
+          <span class="stat-key">Output Format</span>
+        </div>
+      </div>
+
+      <a href="#processor" class="hero-cta">Start Processing ↓</a>
+    </div>
+
+    <div class="hero-vis" aria-hidden="true">
+      <div class="raster-preview">
+        <div class="rp-label">RAW</div>
+        <div class="rp-grid raw"></div>
+        <div class="rp-arrow">→</div>
+        <div class="rp-label">NORMALIZED</div>
+        <div class="rp-grid norm"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="how-inner">
+      <h2 class="how-title">How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h3>Upload</h3>
+            <p>Drop a TIFF, GeoTIFF, or raster file. Any number of bands supported.</p>
+          </div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h3>Normalize</h3>
+            <p>Each band is independently scaled from its true min–max to 0–255.</p>
+          </div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h3>Download</h3>
+            <p>Get your normalized GeoTIFF, with spatial metadata preserved.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSOR -->
+  <section class="processor" id="processor">
+    <div class="processor-inner">
+      <h2 class="processor-title">Upload & Process</h2>
+
+      <!-- DROP ZONE -->
+      <div class="dropzone" id="dropzone">
+        <div class="dz-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <rect x="4" y="8" width="40" height="32" rx="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M24 28V16M24 16L19 21M24 16L29 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M14 36h4M20 36h14M38 36h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+          </svg>
+        </div>
+        <p class="dz-primary">Drag &amp; drop your raster file here</p>
+        <p class="dz-secondary">or</p>
+        <label class="dz-btn" for="fileInput">Browse files</label>
+        <input type="file" id="fileInput" accept=".tif,.tiff,.img,.png,.jpg,.jpeg,.bmp" hidden />
+        <p class="dz-hint">Supports .tif / .tiff / .img / .png / .jpg / .bmp</p>
+      </div>
+
+      <!-- UPLOAD PROGRESS -->
+      <div class="stage" id="stageUpload" hidden>
+        <div class="stage-header">
+          <div class="file-info">
+            <span class="file-icon">◫</span>
+            <span class="file-name" id="fileName">—</span>
+            <span class="file-size" id="fileSize"></span>
+          </div>
+          <span class="stage-status" id="uploadStatus">Uploading…</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="uploadBar"></div>
+        </div>
+        <p class="progress-pct" id="uploadPct">0%</p>
+      </div>
+
+      <!-- PROCESSING -->
+      <div class="stage" id="stageProcess" hidden>
+        <div class="stage-header">
+          <div class="file-info">
+            <span class="file-icon">◫</span>
+            <span class="file-name" id="processFileName">—</span>
+          </div>
+          <span class="stage-status processing-pulse">Processing…</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill indeterminate" id="processBar"></div>
+        </div>
+        <p class="progress-sub">Normalizing bands via min–max scaling…</p>
+      </div>
+
+      <!-- RESULT -->
+      <div class="stage result-stage" id="stageResult" hidden>
+        <div class="result-check">✓</div>
+        <div class="result-info">
+          <h3 class="result-title">Normalization complete</h3>
+          <div class="result-meta" id="resultMeta"></div>
+        </div>
+        <button class="download-btn" id="downloadBtn">
+          <span class="dl-icon">↓</span>
+          Download normalized TIFF
+        </button>
+        <button class="reset-btn" id="resetBtn">Process another file</button>
+      </div>
+
+      <!-- ERROR -->
+      <div class="stage error-stage" id="stageError" hidden>
+        <div class="error-icon">✕</div>
+        <div class="error-body">
+          <h3>Something went wrong</h3>
+          <p id="errorMsg">Unknown error.</p>
+        </div>
+        <button class="reset-btn" id="errorResetBtn">Try again</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>RasterNorm — Local processing, no data leaves your machine.</p>
+    <p class="footer-sub">Built with Python · Flask · Rasterio · NumPy</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
